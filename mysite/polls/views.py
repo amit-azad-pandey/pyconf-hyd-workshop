@@ -11,3 +11,11 @@ class QuestionsApiView(APIView):
         questions = Question.objects.all()
         serializer = QuestionSerializer(questions, many=True)
         return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        serializer = QuestionSerializer(data=request.data)
+        if serializer.is_valid():
+            question = Question.objects.create(**serializer.validated_data)
+            serializer = QuestionSerializer(question)
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
